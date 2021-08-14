@@ -134,4 +134,4 @@ class Pantalla(object):
         else:
             print("\nEl comando no es válido... ")
             time.sleep(1.5)
-            return interactivo_tablero_partida(self, player)
+            return self.interactivo_tablero_partida(player)

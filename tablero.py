@@ -49,12 +49,10 @@ class Tablero(object):
 
     # Al crear un tablero, la disposición inicial es igual a 0.
     disposicion = [
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0]
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0]
     ]
 
     # Queremos implementar la introducción de 1s o 2s de forma aleatoria en
@@ -75,8 +73,8 @@ class Tablero(object):
 
         while por_introducir:
 
-            x = randint(0, 5)
-            y = randint(0, 5)
+            x = randint(0, 3)
+            y = randint(0, 3)
             num_introducir = randint(1, 2)
 
             if self.disposicion[x][y] == 0:
@@ -116,7 +114,7 @@ class Tablero(object):
 
         # Iteramos sobre las filas de derecha a izquierda:
         for i in self.disposicion:
-            for j in invertir_fila(list(range(1,6))):
+            for j in invertir_fila(list(range(1,len(self.disposicion)))):
 
                 if i[j] == 0:
                     i[j] = i[j-1]
@@ -180,18 +178,15 @@ class Tablero(object):
         x = self.disposicion
         print(f"""
         ________________________
-        |{x[0][0]}|{x[0][1]}|{x[0][2]}|{x[0][3]}|{x[0][4]}|{x[0][5]}|
+        |{x[0][0]}|{x[0][1]}|{x[0][2]}|{x[0][3]}|
         _________________________
-        |{x[1][0]}|{x[1][1]}|{x[1][2]}|{x[1][3]}|{x[1][4]}|{x[1][5]}|
+        |{x[1][0]}|{x[1][1]}|{x[1][2]}|{x[1][3]}|
         _________________________
-        |{x[2][0]}|{x[2][1]}|{x[2][2]}|{x[2][3]}|{x[2][4]}|{x[2][5]}|
+        |{x[2][0]}|{x[2][1]}|{x[2][2]}|{x[2][3]}|
         _________________________
-        |{x[3][0]}|{x[3][1]}|{x[3][2]}|{x[3][3]}|{x[3][4]}|{x[3][5]}|
+        |{x[3][0]}|{x[3][1]}|{x[3][2]}|{x[3][3]}|
         _________________________
-        |{x[4][0]}|{x[4][1]}|{x[4][2]}|{x[4][3]}|{x[4][4]}|{x[4][5]}|
-        _________________________
-        |{x[5][0]}|{x[5][1]}|{x[5][2]}|{x[5][3]}|{x[5][4]}|{x[5][5]}|
-        _________________________
+        
         """)
 
 

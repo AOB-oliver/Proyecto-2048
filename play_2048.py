@@ -74,6 +74,9 @@ class Motor(object):
                 else:
                     pass
 
+            else:
+                continuar = False
+
 
 #######################
 ###  Tests ############
