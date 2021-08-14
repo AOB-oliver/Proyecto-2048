@@ -7,3 +7,9 @@ import display
 import Tablero
 
 import players
+
+import time
+
+from os import system
+
+from random import randint
