@@ -60,8 +60,3 @@ class Player(object):
                 self.crear_dir_player()
             else:
                 pass
-
-
-player = Player()
-player.intro_player()
-player.crear_dir_player()

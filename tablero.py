@@ -195,18 +195,27 @@ class Tablero(object):
         """)
 
 
+    # Va a ser rudimentario. Tratemos de que sea lo menos aparatoso posible
+    # Recorremos filas y columnas, buscando parejas adyacentes iguales, o 0s.
+    def comprobar_continuidad(self):
+
+        puede_continuar = False
+        x = self.disposicion
+        # Comprobamos por fila:
+        for i in range(0, len(x)):
+            for j in range(0, len(x[i])-1):
+
+                if x[i][j] == 0 or x[i][j] == x[i][j+1] or x[i][j+1] == 0:
+                    puede_continuar = True
+
+        # Comprobamos por columnas
+        for i in range(0, len(x)-1):
+            for j in range(0, len(x[i])):
+
+                if x[i][j] == 0 or x[i][j] == x[i+1][j] or x[i+1][j] == 0:
+                    puede_continuar = True
+
+        return puede_continuar
+
+
 # TESTS
-
-tablero = Tablero()
-
-for i in range(0,15):
-    tablero.introduce_aleatorio()
-
-tablero.print_tablero()
-time.sleep(2)
-tablero.desplazar_derecha()
-tablero.print_tablero()
-time.sleep(2)
-tablero.desplazar_abajo()
-tablero.print_tablero()
-input()

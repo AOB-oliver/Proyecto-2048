@@ -48,19 +48,24 @@ class Pantalla(object):
     def interactivo_intro_player(self, player):
         system("clear")
         self.cabecera()
-        # Esta bandera está explicada en players.py en el método intro_player()
-        correcto = player.intro_player()
+        self.menu_intro_player()
 
-        if not correcto:
-            self.interactivo_intro_player(player)
+        eleccion = input("> ")
 
-        else:
-            pass
+        if eleccion in "nN":
+            # Esta bandera está explicada en players.py en el método intro_player()
+            correcto = player.intro_player()
+
+            if not correcto:
+                self.interactivo_intro_player(player)
+
+            else:
+                pass
 
     def menu_pral_usuario(self, player):
         print(dedent(f"""
 
-        Q U E   H A C E R {upper(player.nombre)} (?)
+        Q U E   H A C E R {player.nombre} (?)
 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -84,7 +89,12 @@ class Pantalla(object):
         self.menu_pral_usuario(player)
         eleccion = input("> ")
 
-        return eleccion
+        if eleccion in "nNcCrRsS":
+            return eleccion
+
+        else:
+            return self.interactivo_pral_usuario
+
 
     # Este menú será con el que realmente juguemos la partida. Mostrará la cabe-
     # cera, el tablero en cada momento, y las diferentes opciones
@@ -124,4 +134,4 @@ class Pantalla(object):
         else:
             print("\nEl comando no es válido... ")
             time.sleep(1.5)
-            interactivo_tablero_partida(self, player)
+            return interactivo_tablero_partida(self, player)
