@@ -13,3 +13,8 @@ import time
 from os import system
 
 from random import randint
+
+
+# Creamos la clase para el motor del juego, y después lo arrancamos.
+
+class motor(object):
