@@ -108,3 +108,15 @@ def cargar_jugador_desde_DB(nombre, player):
             cargado = False
 
     return cargado
+
+# Implementamos ahora el ranking. Mediante sql es sencillo:
+def mostrar_ranking_jugadores():
+
+    conn = sqlite3.connect('2048DB.db')
+    c = conn.cursor()
+
+    for fila in c.execute('SELECT nombre, puntuacion_max FROM jugadores ORDER BY puntuacion_max;'):
+        print(f"\n{fila[1]} ···· {fila[0]}")
+
+    conn.commit()
+    conn.close()
