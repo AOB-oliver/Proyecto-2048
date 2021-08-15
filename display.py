@@ -56,11 +56,11 @@ class Pantalla(object):
             # Esta bandera está explicada en players.py en el método intro_player()
             correcto = player.intro_player()
 
-            if not correcto:
-                self.interactivo_intro_player(player)
+            if correcto:
+                pass
 
             else:
-                pass
+                self.interactivo_intro_player(player)
 
     def menu_pral_usuario(self, player):
         print(dedent(f"""
