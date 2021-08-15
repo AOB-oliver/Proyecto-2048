@@ -38,8 +38,8 @@ def crear_DB_sistema_guardado():
     c.execute("""CREATE TABLE partidas (
     id INTEGER PRIMARY KEY,
     id_del_jugador INTEGER,
+    nombre_partida TEXT,
     puntuacion INTEGER,
-    mat INTEGER,
     mat1 INTEGER,
     mat2 INTEGER,
     mat3 INTEGER,
@@ -55,7 +55,7 @@ def crear_DB_sistema_guardado():
     mat13 INTEGER,
     mat14 INTEGER,
     mat15 INTEGER,
-    mat16 INTEGER,
+    mat16 INTEGER
     );
     """)
 
@@ -68,7 +68,7 @@ def mostrar_jugadores_en_DB():
     conn = sqlite3.connect('2048DB.db')
     c = conn.cursor()
 
-    for fila in c.execute('SELECT nombre FROM jugadores;'):
+    for fila in c.execute('SELECT nombre FROM jugadores'):
         print(fila)
 
     conn.close()
@@ -84,9 +84,9 @@ def cargar_jugador_desde_DB(nombre, player):
     c = conn.cursor()
 
     # Nos aseguramos de que el nombre exista en la DB:
-    if nombre in c.execute('SELECT nombre FROM jugadores;'):
-        player.nombre = c.execute('SELECT nombre FROM jugadores;')[1]
-        player.puntuacion_maxima = c.execute('SELECT nombre FROM jugadores;')[2]
+    if nombre in list(c.execute('SELECT nombre FROM jugadores')):
+        player.nombre = c.execute('SELECT * FROM jugadores WHERE nombre = ?', nombre)[1]
+        player.puntuacion_maxima = c.execute('SELECT puntuacion_max FROM jugadores WHERE nombre = ?', nombre)[2]
         cargado = True
         conn.commit()
         conn.close()
@@ -102,7 +102,7 @@ def cargar_jugador_desde_DB(nombre, player):
         eleccion = input("> ")
 
         if eleccion in "sS":
-            cargar_jugador_desde_DB(nombre, player)
+            cargado = cargar_jugador_desde_DB(nombre, player)
 
         else:
             cargado = False
@@ -118,5 +118,154 @@ def mostrar_ranking_jugadores():
     for fila in c.execute('SELECT nombre, puntuacion_max FROM jugadores ORDER BY puntuacion_max;'):
         print(f"\n{fila[1]} ···· {fila[0]}")
 
+    input() # Una pausa para que no nos lo salte.
+
     conn.commit()
+    conn.close()
+
+# Implementamos la introducción del tablero de un jugador.
+def guardar_tableroDB(player, nombre_para_guardar):
+    conn = sqlite3.connect('2048DB.db')
+    c = conn.cursor()
+    key = len(list(c.execute('SELECT id FROM partidas')))
+    para_introducir = (
+        key+1,
+        player.id_DB,
+        nombre_para_guardar,
+        player.puntuacion,
+        player.tablero.disposicion[0][0],
+        player.tablero.disposicion[0][1],
+        player.tablero.disposicion[0][2],
+        player.tablero.disposicion[0][3],
+        player.tablero.disposicion[1][0],
+        player.tablero.disposicion[1][1],
+        player.tablero.disposicion[1][2],
+        player.tablero.disposicion[1][3],
+        player.tablero.disposicion[2][0],
+        player.tablero.disposicion[2][1],
+        player.tablero.disposicion[2][2],
+        player.tablero.disposicion[2][3],
+        player.tablero.disposicion[3][0],
+        player.tablero.disposicion[3][1],
+        player.tablero.disposicion[3][2],
+        player.tablero.disposicion[3][3]
+        )
+
+    c.execute("""
+    INSERT INTO partidas (
+    id,
+    id_del_jugador,
+    nombre_partida,
+    puntuacion,
+    mat1,
+    mat2,
+    mat3,
+    mat4,
+    mat5,
+    mat6,
+    mat7,
+    mat8,
+    mat9,
+    mat10,
+    mat11,
+    mat12,
+    mat13,
+    mat14,
+    mat15,
+    mat16
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, para_introducir)
+
+    # Comprobamos ahora si hay que actualizar la puntuacion maxima del jugador
+    pt_max = int(c.execute('SELECT puntuacion_max FROM jugadores WHERE nombre = ?', player.nombre))
+
+    if player.puntuacion_maxima > pt_max:
+        c.execute('UPDATE jugadores SET puntuacion_max = ? WHERE nombre = ?', (player.puntuacion_maxima, player.nombre))
+
+    else:
+        pass
+
+    conn.commit()
+    conn.close()
+
+# Definimos ahora una funcion para guardar un jugador en la DB.
+# return True o False dependiendo de si ha podido o no guardarlo.
+def guardar_jugador_nuevo_DB(player):
+    conn = sqlite3.connect('2048DB.db')
+    c = conn.cursor()
+
+    # Comprobamos si el nombre no está ya en uso en la DB:
+    nombres = list(c.execute('SELECT nombre FROM jugadores'))
+    print(nombres)
+    disponible = player.nombre not in nombres
+
+    if disponible:
+        key = len(nombres)
+        para_introducir = (key, player.nombre, 0)
+        c.execute('INSERT INTO jugadores (id, nombre, puntuacion_max) VALUES (?, ?, ?)', para_introducir)
+        bandera = True
+
+    else:
+        print("El nombre no está disponible... RETURN para continuar.")
+        input()
+        bandera = False
+
+
+    conn.commit()
+    conn.close()
+
+    return bandera
+
+# Funcion para cargarle un tablero a un jugador:
+def cargar_tablero_a_jugador(player, nombre_partida_guardada):
+
+    conn = sqlite3.connect('2048DB.db')
+    c = conn.cursor()
+
+    # Nos aseguramos de que el nombre exista en la DB:
+    if nombre_partida_guardada in c.execute('SELECT nombre_partida FROM partidas'):
+        player.tablero.disposicion[0][0] = c.execute('SELECT mat1 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[0][1] = c.execute('SELECT mat2 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[0][2] = c.execute('SELECT mat3 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[0][3] = c.execute('SELECT mat4 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+
+        player.tablero.disposicion[1][0] = c.execute('SELECT mat5 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[1][1] = c.execute('SELECT mat6 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[1][2] = c.execute('SELECT mat7 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[1][3] = c.execute('SELECT mat8 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+
+        player.tablero.disposicion[2][0] = c.execute('SELECT mat9 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[2][0] = c.execute('SELECT mat10 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[2][0] = c.execute('SELECT mat11 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[2][0] = c.execute('SELECT mat12 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+
+        player.tablero.disposicion[3][0] = c.execute('SELECT mat13 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[3][1] = c.execute('SELECT mat14 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[3][2] = c.execute('SELECT mat15 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        player.tablero.disposicion[3][3] = c.execute('SELECT mat16 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+
+        cargado = True
+        conn.commit()
+        conn.close()
+
+    else:
+        print("No se encuentra esa partida en la memory-card... RETURN para continuar.")
+        input()
+        cargado = False
+
+    conn.commit()
+    conn.close()
+
+    return cargado
+
+# Implementamos que muestren las partidas del usuario
+def mostrar_partidas_DB(player):
+    conn = sqlite3.connect('2048DB.db')
+    c = conn.cursor()
+    key = c.execute('SELECT id FROM jugadores WHERE nombre = ?', player.nombre)
+
+    for fila in c.execute('SELECT nombre_partida FROM partidas WHERE id_del_jugador = ?', key):
+        print(fila)
+
     conn.close()

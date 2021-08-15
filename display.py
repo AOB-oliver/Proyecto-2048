@@ -6,6 +6,8 @@ from os import system
 
 from textwrap import dedent
 
+import guardado
+
 
 ###############
 # C L A S E S #
@@ -62,6 +64,21 @@ class Pantalla(object):
             else:
                 self.interactivo_intro_player(player)
 
+        elif eleccion in "bB":
+            guardado.mostrar_jugadores_en_DB()
+            print("\n¿Qué usuario quieres cargar?\n")
+            nombre = input("> ")
+            cargado = guardado.cargar_jugador_desde_DB(nombre, player)
+
+            if cargado:
+                pass
+
+            else:
+                self.interactivo_intro_player(player)
+        else:
+            self.interactivo_intro_player(player)
+
+
     def menu_pral_usuario(self, player):
         print(dedent(f"""
 
@@ -101,6 +118,7 @@ class Pantalla(object):
     def menu_tablero_partida(self, player):
 
         self.cabecera()
+        print(f"Puntuación: {player.tablero.mayor_numero()}")
         player.tablero.print_tablero()
         print(dedent("""
 

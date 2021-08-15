@@ -21,6 +21,7 @@ class Player(object):
     puntuacion = None
     puntuacion_maxima = None
     tablero = None
+    id_DB = None
 
     def intro_player(self):
         print("Introduce nombre de jugador: ")
@@ -29,10 +30,15 @@ class Player(object):
         correcto = input("> ") in "sisíSiSí"
 
         if correcto:
-            print("Tu nombre ha sido guardado.")
+            bandera = guardado.guardar_jugador_nuevo_DB(self)
 
+            if bandera:
+                 print("Tu nombre ha sido guardado.")
+
+            else:
+                pass
         else:
             pass
         # Como se utilizará desde un método de mostrar en pantalla, devuelve
         # correcto para saber cuando dejar de pedir, nombre de usuario
-        return correcto
+        return bandera
