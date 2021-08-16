@@ -33,13 +33,14 @@ class Motor(object):
 
             if eleccion == "n" or eleccion == "N":
                 self.jugar_partida(player, display)
+                player.tablero = tablero.Tablero() #Reiniciamos el tablero del jugador
 
             elif eleccion == "c" or eleccion == "C":
                 print("Elige la partida para cargar:\n")
-                guardado.mostrar_partidas_DB(player) 
+                guardado.mostrar_partidas_DB(player)
                 para_cargar = input("> ")
                 guardado.cargar_tablero_a_jugador(player, para_cargar) # Falta por implementar el sistema de guardado.
-
+                self.jugar_partida(player, display)
             elif eleccion == "r" or eleccion == "R":
                 guardado.mostrar_ranking_jugadores() # Falta implementar el ranking (será leer un fichero)
 

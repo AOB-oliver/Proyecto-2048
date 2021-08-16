@@ -181,6 +181,9 @@ def guardar_tableroDB(player, nombre_para_guardar):
     VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, para_introducir)
 
+    print("Se ha guardado Correctamente.")
+
+
     # Comprobamos ahora si hay que actualizar la puntuacion maxima del jugador
     c.execute('SELECT puntuacion_max FROM jugadores WHERE nombre = ?', (player.nombre,))
     pt_max = c.fetchone()[0]
