@@ -18,6 +18,8 @@ from os.path import exists
 
 from random import randint
 
+import sqlite3
+
 
 # Creamos la clase para el motor del juego, y después lo arrancamos.
 
@@ -41,6 +43,8 @@ class Motor(object):
                 para_cargar = input("> ")
                 guardado.cargar_tablero_a_jugador(player, para_cargar) # Falta por implementar el sistema de guardado.
                 self.jugar_partida(player, display)
+                player.tablero = tablero.Tablero()
+
             elif eleccion == "r" or eleccion == "R":
                 guardado.mostrar_ranking_jugadores() # Falta implementar el ranking (será leer un fichero)
 

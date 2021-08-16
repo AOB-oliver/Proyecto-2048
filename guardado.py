@@ -107,7 +107,7 @@ def cargar_jugador_desde_DB(nombre, player):
         eleccion = input("> ")
 
         if eleccion in "sS":
-            cargado = cargar_jugador_desde_DB(nombre, player)
+            cargado = False
 
         else:
             cargado = False
@@ -181,18 +181,10 @@ def guardar_tableroDB(player, nombre_para_guardar):
     VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, para_introducir)
 
-    print("Se ha guardado Correctamente.")
 
+    print("\nSe ha guardado correctamente.\n\nRETURN para continuar...")
+    input()
 
-    # Comprobamos ahora si hay que actualizar la puntuacion maxima del jugador
-    c.execute('SELECT puntuacion_max FROM jugadores WHERE nombre = ?', (player.nombre,))
-    pt_max = c.fetchone()[0]
-
-    if player.puntuacion_maxima > pt_max:
-        c.execute('UPDATE jugadores SET puntuacion_max = ? WHERE nombre = ?', (player.puntuacion_maxima, player.nombre,))
-
-    else:
-        pass
 
     conn.commit()
     conn.close()

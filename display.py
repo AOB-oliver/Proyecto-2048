@@ -6,7 +6,7 @@ from os import system
 
 from textwrap import dedent
 
-import guardado
+import guardado, sqlite3
 
 
 ###############
@@ -118,8 +118,29 @@ class Pantalla(object):
     def menu_tablero_partida(self, player):
 
         self.cabecera()
-        print(f"Puntuación: {player.tablero.mayor_numero()}")
         player.puntuacion = player.tablero.mayor_numero()
+        print(f"Puntuación: {player.puntuacion}")
+
+        # Se comprueba si la partida ha acarreado una actualización de
+        # la puntuacion maxima del usuario y se registra en el objeto
+        if player.puntuacion > player.puntuacion_maxima:
+            print("\nSe ha actualizado la puntuación máxima.")
+            player.puntuacion_maxima = player.puntuacion
+
+            # Además, se actualiza también en la base de datos de los
+            # jugadores.
+            sqltext="""
+            UPDATE jugadores
+                SET puntuacion_max = ?
+                WHERE nombre = ?
+            """
+            conn = sqlite3.connect('2048DB.db')
+            c = conn.cursor()
+            c.execute(sqltext, [player.puntuacion_maxima, player.nombre])
+            conn.commit()
+            conn.close()
+        else:
+            pass
         player.tablero.print_tablero()
         print(dedent("""
 
