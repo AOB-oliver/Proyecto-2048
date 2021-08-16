@@ -88,6 +88,11 @@ class Motor(object):
                     else:
                         pass
                     continuar = False
+
+                    # Actualizamos si es necesario la puntuacion máxima.
+                    if player.puntuacion > player.puntuacion_maxima:
+                        player.puntuacion_maxima = player.puntuacion
+
                     player.puntuacion = 0
 
                 else:
