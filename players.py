@@ -18,8 +18,8 @@ import guardado
 class Player(object):
 
     nombre = None
-    puntuacion = None
-    puntuacion_maxima = None
+    puntuacion = 0
+    puntuacion_maxima = 0
     tablero = None
     id_DB = None
 
@@ -38,7 +38,7 @@ class Player(object):
             else:
                 pass
         else:
-            pass
+            bandera = False
         # Como se utilizará desde un método de mostrar en pantalla, devuelve
         # correcto para saber cuando dejar de pedir, nombre de usuario
         return bandera

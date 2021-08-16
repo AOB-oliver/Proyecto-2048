@@ -110,7 +110,7 @@ class Pantalla(object):
             return eleccion
 
         else:
-            return self.interactivo_pral_usuario
+            return self.interactivo_pral_usuario(player)
 
 
     # Este menú será con el que realmente juguemos la partida. Mostrará la cabe-
@@ -119,6 +119,7 @@ class Pantalla(object):
 
         self.cabecera()
         print(f"Puntuación: {player.tablero.mayor_numero()}")
+        player.puntuacion = player.tablero.mayor_numero()
         player.tablero.print_tablero()
         print(dedent("""
 
@@ -151,5 +152,5 @@ class Pantalla(object):
 
         else:
             print("\nEl comando no es válido... ")
-            time.sleep(1.5)
+            time.sleep(1)
             return self.interactivo_tablero_partida(player)

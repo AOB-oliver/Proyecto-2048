@@ -82,11 +82,16 @@ def mostrar_jugadores_en_DB():
 def cargar_jugador_desde_DB(nombre, player):
     conn = sqlite3.connect('2048DB.db')
     c = conn.cursor()
+    c.execute('SELECT nombre FROM jugadores')
 
     # Nos aseguramos de que el nombre exista en la DB:
-    if nombre in list(c.execute('SELECT nombre FROM jugadores')):
-        player.nombre = c.execute('SELECT * FROM jugadores WHERE nombre = ?', nombre)[1]
-        player.puntuacion_maxima = c.execute('SELECT puntuacion_max FROM jugadores WHERE nombre = ?', nombre)[2]
+    if (nombre,) in c.fetchall():
+        c.execute('SELECT id FROM jugadores WHERE nombre = ?', (nombre,))
+        player.id_DB = c.fetchone()[0]
+        c.execute('SELECT nombre FROM jugadores WHERE nombre = ?', (nombre,))
+        player.nombre = c.fetchone()[0]
+        c.execute('SELECT puntuacion_max FROM jugadores WHERE nombre = ?', (nombre,))
+        player.puntuacion_maxima = c.fetchone()[0]
         cargado = True
         conn.commit()
         conn.close()
@@ -127,9 +132,8 @@ def mostrar_ranking_jugadores():
 def guardar_tableroDB(player, nombre_para_guardar):
     conn = sqlite3.connect('2048DB.db')
     c = conn.cursor()
-    key = len(list(c.execute('SELECT id FROM partidas')))
+
     para_introducir = (
-        key+1,
         player.id_DB,
         nombre_para_guardar,
         player.puntuacion,
@@ -148,7 +152,7 @@ def guardar_tableroDB(player, nombre_para_guardar):
         player.tablero.disposicion[3][0],
         player.tablero.disposicion[3][1],
         player.tablero.disposicion[3][2],
-        player.tablero.disposicion[3][3]
+        player.tablero.disposicion[3][3],
         )
 
     c.execute("""
@@ -174,14 +178,15 @@ def guardar_tableroDB(player, nombre_para_guardar):
     mat15,
     mat16
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, para_introducir)
 
     # Comprobamos ahora si hay que actualizar la puntuacion maxima del jugador
-    pt_max = int(c.execute('SELECT puntuacion_max FROM jugadores WHERE nombre = ?', player.nombre))
+    c.execute('SELECT puntuacion_max FROM jugadores WHERE nombre = ?', (player.nombre,))
+    pt_max = c.fetchone()[0]
 
     if player.puntuacion_maxima > pt_max:
-        c.execute('UPDATE jugadores SET puntuacion_max = ? WHERE nombre = ?', (player.puntuacion_maxima, player.nombre))
+        c.execute('UPDATE jugadores SET puntuacion_max = ? WHERE nombre = ?', (player.puntuacion_maxima, player.nombre,))
 
     else:
         pass
@@ -196,15 +201,26 @@ def guardar_jugador_nuevo_DB(player):
     c = conn.cursor()
 
     # Comprobamos si el nombre no está ya en uso en la DB:
-    nombres = list(c.execute('SELECT nombre FROM jugadores'))
-    print(nombres)
-    disponible = player.nombre not in nombres
+    c.execute('SELECT nombre FROM jugadores')
+    nombres = c.fetchall()
+    input()
+
+    if nombres == None:
+        nombres = []
+
+    else:
+        pass
+
+    disponible = (player.nombre,) not in nombres
 
     if disponible:
-        key = len(nombres)
-        para_introducir = (key, player.nombre, 0)
-        c.execute('INSERT INTO jugadores (id, nombre, puntuacion_max) VALUES (?, ?, ?)', para_introducir)
+
+        para_introducir = (player.nombre, 0)
+        c.execute('INSERT INTO jugadores (id, nombre, puntuacion_max) VALUES (NULL, ?, ?)', para_introducir)
+        c.execute('SELECT id FROM jugadores WHERE nombre=?', [player.nombre])
+        player.id_DB = c.fetchone()[0]
         bandera = True
+
 
     else:
         print("El nombre no está disponible... RETURN para continuar.")
@@ -222,28 +238,46 @@ def cargar_tablero_a_jugador(player, nombre_partida_guardada):
 
     conn = sqlite3.connect('2048DB.db')
     c = conn.cursor()
-
+    c.execute('SELECT nombre_partida FROM partidas')
+    partidas = c.fetchall()
     # Nos aseguramos de que el nombre exista en la DB:
-    if nombre_partida_guardada in c.execute('SELECT nombre_partida FROM partidas'):
-        player.tablero.disposicion[0][0] = c.execute('SELECT mat1 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[0][1] = c.execute('SELECT mat2 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[0][2] = c.execute('SELECT mat3 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[0][3] = c.execute('SELECT mat4 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+    if (nombre_partida_guardada,) in partidas:
+        c.execute('SELECT mat1 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[0][0] = c.fetchone()[0]
+        c.execute('SELECT mat2 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[0][1] = c.fetchone()[0]
+        c.execute('SELECT mat3 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[0][2] = c.fetchone()[0]
+        c.execute('SELECT mat4 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[0][3] = c.fetchone()[0]
 
-        player.tablero.disposicion[1][0] = c.execute('SELECT mat5 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[1][1] = c.execute('SELECT mat6 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[1][2] = c.execute('SELECT mat7 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[1][3] = c.execute('SELECT mat8 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        c.execute('SELECT mat5 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[1][0] = c.fetchone()[0]
+        c.execute('SELECT mat6 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[1][1] = c.fetchone()[0]
+        c.execute('SELECT mat7 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[1][2] = c.fetchone()[0]
+        c.execute('SELECT mat8 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[1][3] = c.fetchone()[0]
 
-        player.tablero.disposicion[2][0] = c.execute('SELECT mat9 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[2][0] = c.execute('SELECT mat10 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[2][0] = c.execute('SELECT mat11 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[2][0] = c.execute('SELECT mat12 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        c.execute('SELECT mat9 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[2][0] = c.fetchone()[0]
+        c.execute('SELECT mat10 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[2][1] = c.fetchone()[0]
+        c.execute('SELECT mat11 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[2][2] = c.fetchone()[0]
+        c.execute('SELECT mat12 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[2][3] = c.fetchone()[0]
 
-        player.tablero.disposicion[3][0] = c.execute('SELECT mat13 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[3][1] = c.execute('SELECT mat14 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[3][2] = c.execute('SELECT mat15 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
-        player.tablero.disposicion[3][3] = c.execute('SELECT mat16 FROM partidas WHERE nombre_partida = ?', nombre_partida_guardada)[0]
+        c.execute('SELECT mat13 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[3][0] = c.fetchone()[0]
+        c.execute('SELECT mat14 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[3][1] = c.fetchone()[0]
+        c.execute('SELECT mat15 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[3][2] = c.fetchone()[0]
+        c.execute('SELECT mat16 FROM partidas WHERE nombre_partida = ?', [nombre_partida_guardada])
+        player.tablero.disposicion[3][3] = c.fetchone()[0]
+
 
         cargado = True
         conn.commit()
@@ -253,9 +287,10 @@ def cargar_tablero_a_jugador(player, nombre_partida_guardada):
         print("No se encuentra esa partida en la memory-card... RETURN para continuar.")
         input()
         cargado = False
+        conn.commit()
+        conn.close()
 
-    conn.commit()
-    conn.close()
+
 
     return cargado
 
@@ -263,9 +298,10 @@ def cargar_tablero_a_jugador(player, nombre_partida_guardada):
 def mostrar_partidas_DB(player):
     conn = sqlite3.connect('2048DB.db')
     c = conn.cursor()
-    key = c.execute('SELECT id FROM jugadores WHERE nombre = ?', player.nombre)
+    c.execute('SELECT id FROM jugadores WHERE nombre = ?', (player.nombre,))
+    key = int(c.fetchone()[0])
 
-    for fila in c.execute('SELECT nombre_partida FROM partidas WHERE id_del_jugador = ?', key):
+    for fila in c.execute('SELECT nombre_partida FROM partidas WHERE id_del_jugador = ?', (key,)):
         print(fila)
 
     conn.close()

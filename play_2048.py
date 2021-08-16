@@ -36,7 +36,7 @@ class Motor(object):
 
             elif eleccion == "c" or eleccion == "C":
                 print("Elige la partida para cargar:\n")
-                guardado.mostrar_partidas_DB(player)
+                guardado.mostrar_partidas_DB(player) 
                 para_cargar = input("> ")
                 guardado.cargar_tablero_a_jugador(player, para_cargar) # Falta por implementar el sistema de guardado.
 
