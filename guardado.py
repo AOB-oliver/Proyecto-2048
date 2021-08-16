@@ -129,6 +129,19 @@ def mostrar_ranking_jugadores():
     conn.close()
 
 # Implementamos la introducción del tablero de un jugador.
+#
+# Como se utiliza para guardar partida, puede implementarse la posibilidad de
+# sobreescribir partida. ¿Cómo?:
+#
+#       1. Habría que mostrar las partidas actualmente guardadas. Eso es
+#       preferible hacerlo en el módulo de display.
+#
+#       2. Mediante un [[ if ]], mostrar mensaje para confirmar  la sobre-
+#       escritura en caso de que el nombre ya esté registrado.
+#
+#       3. Si se confirma, se modifica la entrada de la base de datos con el
+#       nuevo tablero. Si no se confirma, se dará el error por ya existir el
+#       nombre y debería de poder volver a introducir un nuevo nombre.
 def guardar_tableroDB(player, nombre_para_guardar):
     conn = sqlite3.connect('2048DB.db')
     c = conn.cursor()
