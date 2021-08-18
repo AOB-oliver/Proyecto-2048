@@ -53,6 +53,20 @@ class Motor(object):
                 input()
                 continuar = False
 
+            elif eleccion == "d" or eleccion =="D":
+                system("clear")
+                print("Introduce la contraseña para ELIMINAR las partidas: ")
+                contraseña = input("> ")
+
+                if contraseña == "4dri4N":
+                    system("rm 2048DB.db")
+                    print("La database con las partidas ha sido ELIMINADA.")
+                    print("Se procede a reiniciar el juego...")
+                    input()
+
+                    system("python play_2048.py")
+                    exit()
+
             else:
                 pass # Por como funciona displa.interactivo_pral_usuario, esto
                      # esto no puede ocurrir.

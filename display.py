@@ -95,6 +95,8 @@ class Pantalla(object):
         |                                   |
         |              Salir ·· press s/S   |
         |                                   |
+        |  Destruir Guardado ·· press d/D   |
+        |                                   |
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -106,7 +108,7 @@ class Pantalla(object):
         self.menu_pral_usuario(player)
         eleccion = input("> ")
 
-        if eleccion in "nNcCrRsS":
+        if eleccion in "nNcCrRsSdD":
             return eleccion
 
         else:

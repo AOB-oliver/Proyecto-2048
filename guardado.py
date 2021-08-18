@@ -16,6 +16,8 @@ from os.path import exists # Querremos saber si la base de datos ya esta creada
 
 from textwrap import dedent
 
+from sys import exit
+
 
 
 # La primera función es para crear la estructura de la DB en caso de que el
@@ -99,9 +101,9 @@ def cargar_jugador_desde_DB(nombre, player):
     else:
         print("El nombre introducido no está en la base de datos...")
         print(dedent("""
-        --> Introducir de nuevo (s)
+        --> Introducir de nuevo (RETURN o 's')
 
-        --> Salir (RETURN)
+        --> Salir (Otro comando)
 
         """))
         eleccion = input("> ")
@@ -110,7 +112,7 @@ def cargar_jugador_desde_DB(nombre, player):
             cargado = False
 
         else:
-            cargado = False
+            exit("Esperamos volver a verte!")
 
     return cargado
 
@@ -120,7 +122,7 @@ def mostrar_ranking_jugadores():
     conn = sqlite3.connect('2048DB.db')
     c = conn.cursor()
 
-    for fila in c.execute('SELECT nombre, puntuacion_max FROM jugadores ORDER BY puntuacion_max;'):
+    for fila in c.execute('SELECT nombre, puntuacion_max FROM jugadores ORDER BY puntuacion_max DESC;'):
         print(f"\n{fila[1]} ···· {fila[0]}")
 
     input() # Una pausa para que no nos lo salte.
