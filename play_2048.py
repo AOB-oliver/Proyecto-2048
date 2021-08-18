@@ -41,18 +41,29 @@ class Motor(object):
                 print("Elige la partida para cargar:\n")
                 guardado.mostrar_partidas_DB(player)
                 para_cargar = input("> ")
-                guardado.cargar_tablero_a_jugador(player, para_cargar) # Falta por implementar el sistema de guardado.
-                self.jugar_partida(player, display)
+
+                # Si se carga correctamente el tablero, inicia partida
+                if guardado.cargar_tablero_a_jugador(player, para_cargar):
+                    self.jugar_partida(player, display)
+
+                # Al terminar este camino, resetea tablero.
                 player.tablero = tablero.Tablero()
 
+            # Mostramos el ranking de puntuaciones.
             elif eleccion == "r" or eleccion == "R":
-                guardado.mostrar_ranking_jugadores() # Falta implementar el ranking (será leer un fichero)
+                guardado.mostrar_ranking_jugadores()
 
+            # Salida del juego
             elif eleccion == "s" or eleccion == "S":
                 print(f"Hasta pronto {player.nombre}.\nRETURN...")
                 input()
+                system("clear") # Dejamos el terminal limpio.
                 continuar = False
 
+            # Implementamos la posibilidad de que un jugador destruya la base de
+            # datos donde se guardan jugadores y partidas guardadas.
+            #
+            # Contraseña para tal acción : --> '4dri4N' <--
             elif eleccion == "d" or eleccion =="D":
                 system("clear")
                 print("Introduce la contraseña para ELIMINAR las partidas: ")
@@ -64,6 +75,8 @@ class Motor(object):
                     print("Se procede a reiniciar el juego...")
                     input()
 
+                    # Arrancamos de nuevo el juego, con la base de datos elimi-
+                    # nada. Por tanto, se crea  de nuevo.
                     system("python play_2048.py")
                     exit()
 

@@ -71,7 +71,7 @@ def mostrar_jugadores_en_DB():
     c = conn.cursor()
 
     for fila in c.execute('SELECT nombre FROM jugadores'):
-        print(fila)
+        print(f"--> {fila[0]}\n")
 
     conn.close()
 
@@ -312,6 +312,6 @@ def mostrar_partidas_DB(player):
     key = int(c.fetchone()[0])
 
     for fila in c.execute('SELECT nombre_partida FROM partidas WHERE id_del_jugador = ?', (key,)):
-        print(fila)
+        print(f"-->\t {fila[0]}\n")
 
     conn.close()
